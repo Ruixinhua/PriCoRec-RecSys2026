@@ -1,0 +1,49 @@
+# Python caches and environments
+__pycache__/
+*.py[cod]
+*.so
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+.coverage
+htmlcov/
+.venv/
+venv/
+
+# Packaging output
+build/
+dist/
+*.egg-info/
+
+# Editors and local configuration
+.DS_Store
+.idea/
+.vscode/
+.env
+.env.*
+!.env.example
+
+# Local data, checkpoints, and experiment artifacts
+/data/
+/datasets/
+/processed/
+/outputs/
+/runs/
+/logs/
+/tmp/
+*.log
+*.ckpt
+*.model
+*.pt
+*.pth
+*.ckpt.json
+*.model.json
+*.pt.json
+*.pth.json
+
+# Generated or archived experiment configuration
+cloud_device_recsys/config/generated/
+cloud_device_recsys/config/runtime/
+cloud_device_recsys/config/archive/
+cloud_device_recsys/hp_config/archive/
+cloud_device_recsys/archive/

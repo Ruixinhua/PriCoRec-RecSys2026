@@ -1,0 +1,112 @@
+# =============================================================================
+# Minimal end-to-end smoke pipeline
+# =============================================================================
+
+dataset_id: "SmokeTest"
+dataset_config: "./cloud_device_recsys/config/dataset_config.yaml"
+
+seed: 2024
+gpu: -1
+
+debug:
+  n_rows: null
+
+vocab_pruning:
+  enabled: 0
+  mode: "runtime"
+  save_fp16: false
+
+stages:
+  retrieval:
+    enabled: true
+    model: "DualTowerRetrieval"
+    features: ["FG1", "FG2"]
+    top_k: 8
+    model_params:
+      metrics_k: [3, 5, 8]
+      monitor: "Recall@8"
+      popularity_metrics_k: [3, 5, 8]
+      embedding_dim: 8
+      user_tower_layers: [16, 8]
+      item_tower_layers: [16, 8]
+      user_tower_dropout: 0.0
+      item_tower_dropout: 0.0
+      batch_norm: false
+      use_l2_norm: true
+      use_user_transformer: 1
+      user_transformer_layers: 1
+      user_transformer_heads: 4
+      use_item_transformer: 0
+      use_diversity_loss: 0
+    training:
+      epochs: 1
+      batch_size: 32
+      patience: 1
+      learning_rate: 0.001
+      optimizer: "adam"
+    metrics: ["Recall"]
+
+  preranking:
+    enabled: true
+    model: "PNN"
+    features: ["FG1", "FG2"]
+    top_k: 5
+    model_params:
+      metrics_k: [3, 5]
+      monitor: "Recall@5"
+      num_negatives: 4
+      loss_type: "bpr"
+      use_logit: true
+      embedding_dim: 8
+      use_feature_encoder: true
+      hidden_units: [16, 8]
+      hidden_activations: "ReLU"
+      net_dropout: 0.0
+      batch_norm: false
+      product_type: "inner"
+      use_diversity_loss: true
+      diversity_lambda: 0.01
+      diversity_theta: 0.7
+      diversity_kernel: "cosine"
+      diversity_num_negatives: 4
+      diversity_epochs: 1
+      diversity_item_features:
+        [cand_item_id, cand_category, cand_brand, cand_price_level]
+    training:
+      epochs: 1
+      batch_size: 32
+      learning_rate: 0.001
+      optimizer: "adam"
+    metrics: ["nDCG", "Recall"]
+
+  reranking:
+    enabled: true
+    model: "PNN"
+    features: ["FG1", "FG2", "FG3"]
+    top_k: 3
+    model_params:
+      metrics_k: [3, 5]
+      monitor: "Recall@3"
+      num_negatives: 4
+      loss_type: "bpr"
+      use_logit: true
+      embedding_dim: 4
+      use_feature_encoder: true
+      hidden_units: [16, 8]
+      hidden_activations: "ReLU"
+      net_dropout: 0.0
+      batch_norm: false
+      product_type: "inner"
+      use_diversity_loss: false
+      use_cloud_score: true
+    training:
+      epochs: 1
+      batch_size: 32
+      learning_rate: 0.001
+      optimizer: "adam"
+    metrics: ["nDCG", "Recall"]
+
+output:
+  root: "./outputs"
+  save_intermediate: true
+  save_csv: false

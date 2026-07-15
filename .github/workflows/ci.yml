@@ -1,0 +1,68 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test-and-smoke:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.10", "3.12"]
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+          cache: pip
+          cache-dependency-path: |
+            pyproject.toml
+            requirements.txt
+
+      - name: Install CPU PyTorch and package
+        run: |
+          python -m pip install --index-url https://download.pytorch.org/whl/cpu "torch>=2.1"
+          python -m pip install -e ".[dev]"
+          python -m pip check
+
+      - name: Run tests
+        run: python -m pytest -q
+
+      - name: Build distributions
+        run: python -m build
+
+      - name: Run synthetic end-to-end smoke test
+        if: matrix.python-version == '3.12'
+        run: |
+          python -m cloud_device_recsys.tools.generate_smoke_data
+          python -m cloud_device_recsys.run_preprocess \
+            --raw_data_root ./data/raw/SmokeTest \
+            --dataset_id SmokeTest \
+            --config_dir ./cloud_device_recsys/config \
+            --output_dir ./data/processed/SmokeTest \
+            --force_rebuild
+          python -m cloud_device_recsys.run_pipeline \
+            --config ./cloud_device_recsys/config \
+            --pipeline_id pipeline_config/smoke_pipeline \
+            --dataset_id SmokeTest \
+            --mode full \
+            --gpu -1 \
+            --output_dir ./outputs/smoke \
+            --experiment_id ci_smoke \
+            --save_stage_outputs
+          test -s ./outputs/smoke/ci_smoke/metrics.json

@@ -1,0 +1,69 @@
+[build-system]
+requires = ["setuptools>=77", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "pricorec"
+version = "0.1.0"
+description = "Research implementation of privacy-aware cloud-device collaborative recommendation."
+readme = "README.md"
+requires-python = ">=3.10"
+license = "Apache-2.0"
+license-files = ["LICENSE", "THIRD_PARTY_NOTICES.md"]
+authors = [
+    {name = "Dairui Liu"},
+    {name = "Zhongyi Lu"},
+    {name = "Jitao Lu"},
+    {name = "Aghiles Salah"},
+    {name = "Mete Sertkan"},
+    {name = "Roger Zhe Li"},
+    {name = "Changhong Jin"},
+    {name = "Barry Smyth"},
+    {name = "Xingsheng Guo"},
+    {name = "Ruihai Dong"},
+]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Science/Research",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+]
+dependencies = [
+    "torch>=2.1",
+    "pandas>=2.0",
+    "PyYAML>=6.0",
+    "scikit-learn>=1.3",
+    "numpy<2",
+    "h5py>=3.9",
+    "psutil>=5.9",
+    "tqdm>=4.65",
+    "pyarrow>=12",
+    "polars<=1.0.0",
+]
+
+[project.optional-dependencies]
+tfrecord = ["tensorflow>=2.15"]
+dev = [
+    "build>=1.2",
+    "pytest>=8",
+]
+
+[project.urls]
+Repository = "https://github.com/Ruixinhua/PriCoRec-Paper"
+Issues = "https://github.com/Ruixinhua/PriCoRec-Paper/issues"
+
+[tool.setuptools]
+include-package-data = true
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["cloud_device_recsys*", "fuxictr*", "model_zoo*"]
+
+[tool.setuptools.package-data]
+cloud_device_recsys = ["config/**/*.yaml"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

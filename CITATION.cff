@@ -1,0 +1,55 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite the PriCoRec paper and this software release."
+type: software
+title: "PriCoRec: Research Code for Privacy-Aware Cloud-Device Collaborative Recommendation"
+version: 0.1.0
+date-released: 2026-07-15
+license: Apache-2.0
+repository-code: "https://github.com/Ruixinhua/PriCoRec-Paper"
+url: "https://github.com/Ruixinhua/PriCoRec-Paper"
+authors:
+  - family-names: Liu
+    given-names: Dairui
+  - family-names: Lu
+    given-names: Zhongyi
+  - family-names: Lu
+    given-names: Jitao
+  - family-names: Salah
+    given-names: Aghiles
+  - family-names: Sertkan
+    given-names: Mete
+  - family-names: Li
+    given-names: Roger Zhe
+  - family-names: Jin
+    given-names: Changhong
+  - family-names: Smyth
+    given-names: Barry
+  - family-names: Guo
+    given-names: Xingsheng
+  - family-names: Dong
+    given-names: Ruihai
+preferred-citation:
+  type: conference-paper
+  title: "PriCoRec: A Privacy-Aware Cloud–Device Collaborative Framework for Ad Recommendation under Feature Constraints"
+  year: 2026
+  authors:
+    - family-names: Liu
+      given-names: Dairui
+    - family-names: Lu
+      given-names: Zhongyi
+    - family-names: Lu
+      given-names: Jitao
+    - family-names: Salah
+      given-names: Aghiles
+    - family-names: Sertkan
+      given-names: Mete
+    - family-names: Li
+      given-names: Roger Zhe
+    - family-names: Jin
+      given-names: Changhong
+    - family-names: Smyth
+      given-names: Barry
+    - family-names: Guo
+      given-names: Xingsheng
+    - family-names: Dong
+      given-names: Ruihai

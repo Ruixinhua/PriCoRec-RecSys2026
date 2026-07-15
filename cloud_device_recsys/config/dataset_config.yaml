@@ -1,0 +1,55 @@
+# Minimal dataset configuration for the runnable PriCoRec smoke pipeline.
+
+SmokeTest:
+  raw_data_root: "./data/raw/SmokeTest"
+  raw_data_format: "csv"
+  raw_files: [train, valid, test]
+
+  processed_data_root: "./data/processed/SmokeTest"
+  processed_data_format: "parquet"
+
+  label_col:
+    name: "label"
+    dtype: float
+
+  preprocessing:
+    min_categr_count: 1
+    positive_only_eval: true
+    generate_impression_id: true
+
+  item_pool:
+    file: "cand_items_smoke"
+
+  impression_id_col: "impression_id"
+  item_id_col: "cand_item_id"
+
+  feature_cols:
+    - name: [cand_item_id, cand_category, cand_brand, cand_price_level]
+      type: categorical
+      dtype: int
+      feature_group: FG1
+
+    - name: clicked_item_seq
+      type: sequence
+      dtype: int
+      max_len: 6
+      padding: pre
+      splitter: ","
+      share_embedding: cand_item_id
+      feature_encoder: "layers.MaskedAveragePooling()"
+      feature_group: FG2
+
+    - name: clicked_category_seq
+      type: sequence
+      dtype: int
+      max_len: 6
+      padding: pre
+      splitter: ","
+      share_embedding: cand_category
+      feature_encoder: "layers.MaskedAveragePooling()"
+      feature_group: FG2
+
+    - name: [user_id, user_age_level, user_gender, device_type]
+      type: categorical
+      dtype: int
+      feature_group: FG3

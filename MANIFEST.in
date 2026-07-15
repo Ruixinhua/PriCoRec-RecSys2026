@@ -1,0 +1,8 @@
+include CITATION.cff
+include DATA.md
+include LICENSE
+include README.md
+include REPRODUCIBILITY.md
+include THIRD_PARTY_NOTICES.md
+include requirements.txt
+recursive-include cloud_device_recsys/config *.yaml
