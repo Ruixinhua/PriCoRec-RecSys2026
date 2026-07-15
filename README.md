@@ -1,10 +1,14 @@
 # PriCoRec
 
-Maintained, paper-aligned research code accompanying **“PriCoRec: A
-Privacy-Aware Cloud–Device Collaborative Framework for Ad Recommendation under
-Feature Constraints.”**
+Research code for **“PriCoRec: A Privacy-Aware Cloud–Device Collaborative
+Framework for Ad Recommendation under Feature Constraints.”**
 
-The runnable path follows the method described in the paper:
+PriCoRec was accepted as a Main Conference Short Paper at
+[RecSys '26](https://recsys.acm.org/recsys26/), the 20th ACM Conference on
+Recommender Systems, which will be held in Minneapolis, Minnesota, USA,
+September 28–October 2, 2026.
+
+The runnable path implements the following three-stage workflow:
 
 1. cloud retrieval over cloud-accessible item and behavior features;
 2. cloud PNN pre-ranking over `FG1+FG2`, with a DPP-inspired diversity
@@ -32,8 +36,8 @@ generated results are intentionally excluded.
 | Frozen receipts for the numerical paper tables | No | No reproduction claim is made |
 | Production serving/deployment infrastructure | No | Outside this repository's scope |
 
-The smoke configuration verifies that the maintained paper-aligned code path
-runs. It does **not** reproduce or validate the numerical tables in the paper.
+The smoke configuration verifies that the maintained public code path runs. It
+does **not** reproduce or validate the numerical tables in the paper.
 See [Reproducibility scope](REPRODUCIBILITY.md) for the exact evidence boundary.
 
 ## Installation
@@ -77,12 +81,12 @@ python -m cloud_device_recsys.run_pipeline \
   --mode full \
   --gpu -1 \
   --output_dir ./outputs/smoke \
-  --experiment_id paper_smoke \
+  --experiment_id pricorec_smoke \
   --save_stage_outputs
 ```
 
 The final metrics are written to
-`outputs/smoke/paper_smoke/metrics.json`. Generated `data/` and `outputs/`
+`outputs/smoke/pricorec_smoke/metrics.json`. Generated `data/` and `outputs/`
 directories are ignored by Git.
 
 Run the automated checks with:
@@ -144,9 +148,10 @@ aggregation.
 
 ## Citation
 
-Please cite the paper and this software release. Machine-readable metadata is
-available in [`CITATION.cff`](CITATION.cff). Add the DOI or final proceedings
-metadata once those identifiers are available.
+Please cite the RecSys '26 paper and this software release. Machine-readable
+metadata is available in [`CITATION.cff`](CITATION.cff), including the venue and
+current in-press status. The DOI, page range, and final proceedings metadata
+will be added once ACM publishes them.
 
 ## License and attribution
 

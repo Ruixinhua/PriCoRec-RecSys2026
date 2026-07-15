@@ -1,12 +1,12 @@
 cff-version: 1.2.0
-message: "If you use this software, please cite the PriCoRec paper and this software release."
+message: "If you use this software, please cite the PriCoRec RecSys 2026 paper and this software release."
 type: software
-title: "PriCoRec: Research Code for Privacy-Aware Cloud-Device Collaborative Recommendation"
-version: 0.1.0
+title: "PriCoRec"
+version: 0.1.1
 date-released: 2026-07-15
 license: Apache-2.0
-repository-code: "https://github.com/Ruixinhua/PriCoRec-Paper"
-url: "https://github.com/Ruixinhua/PriCoRec-Paper"
+repository-code: "https://github.com/Ruixinhua/PriCoRec-RecSys2026"
+url: "https://github.com/Ruixinhua/PriCoRec-RecSys2026"
 authors:
   - family-names: Liu
     given-names: Dairui
@@ -32,6 +32,14 @@ preferred-citation:
   type: conference-paper
   title: "PriCoRec: A Privacy-Aware Cloud–Device Collaborative Framework for Ad Recommendation under Feature Constraints"
   year: 2026
+  status: in-press
+  conference:
+    name: "The 20th ACM Conference on Recommender Systems"
+    alias: "RecSys '26"
+    date-start: 2026-09-28
+    date-end: 2026-10-02
+    location: "Minneapolis, Minnesota, USA"
+    website: "https://recsys.acm.org/recsys26/"
   authors:
     - family-names: Liu
       given-names: Dairui

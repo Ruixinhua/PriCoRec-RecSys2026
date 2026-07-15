@@ -64,13 +64,13 @@ python -m cloud_device_recsys.run_pipeline \
   --mode full \
   --gpu -1 \
   --output_dir ./outputs/smoke \
-  --experiment_id paper_smoke \
+  --experiment_id pricorec_smoke \
   --save_stage_outputs
 ```
 
-Inspect `outputs/smoke/paper_smoke/metrics.json` and the stage outputs under the
-same experiment directory. These generated files are intentionally ignored by
-Git.
+Inspect `outputs/smoke/pricorec_smoke/metrics.json` and the stage outputs under
+the same experiment directory. These generated files are intentionally ignored
+by Git.
 
 ## Privacy and deployment boundary
 
