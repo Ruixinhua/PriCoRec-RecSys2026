@@ -1,8 +1,8 @@
 # Data contract and adaptation checklist
 
-The repository distributes synthetic data generation code only. It does not
-distribute paper datasets, transformed copies, paper split manifests, or
-paper-dataset-ready YAML files.
+The repository distributes synthetic data generation code plus paper-aligned
+schemas and pipeline YAML for TaobaoAd and Ali-CCP. It does not distribute the
+paper datasets, transformed copies, split manifests, or checkpoints.
 
 ## Expected split layout
 
@@ -22,6 +22,7 @@ The `SmokeTest` fixture demonstrates the minimum configuration surface:
 
 - `label_col`: binary target definition;
 - `impression_id_col`: stable request/group identifier;
+- `user_id_col`: stable user identifier retained for grouped accounting;
 - `item_id_col`: candidate item identifier;
 - `item_pool.file`: item feature pool name;
 - `feature_cols`: names, types, dtypes, sequence settings, and feature groups;
@@ -30,7 +31,22 @@ The `SmokeTest` fixture demonstrates the minimum configuration surface:
 
 See
 [`cloud_device_recsys/config/dataset_config.yaml`](cloud_device_recsys/config/dataset_config.yaml)
-for the complete synthetic example.
+for the synthetic fixture and the normalized TaobaoAd and Ali-CCP field maps.
+
+## Included paper-aligned configurations
+
+The two public-dataset pipelines are selected with
+[`pipeline_config/taobaoad_paper`](cloud_device_recsys/config/pipeline_config/taobaoad_paper.yaml)
+and
+[`pipeline_config/ali_ccp_paper`](cloud_device_recsys/config/pipeline_config/ali_ccp_paper.yaml).
+Their schemas explicitly encode the paper feature boundary: TaobaoAd has 11
+cloud-accessible and 8 device-only model fields; Ali-CCP has 14
+cloud-accessible and 9 device-only model fields. Fields excluded by the paper
+mapping remain metadata or `drop` fields rather than model inputs.
+
+These files expect already normalized `train.csv`, `valid.csv`, and `test.csv`
+inputs. They do not download either dataset or reconstruct the paper's split
+manifests from the vendor archives.
 
 ## Required review before using a real dataset
 

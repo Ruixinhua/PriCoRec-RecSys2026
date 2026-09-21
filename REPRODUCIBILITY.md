@@ -6,26 +6,30 @@ reproducing the numerical tables in the paper.
 
 ## What is verified
 
-The public synthetic smoke workflow verifies, on CPU, that:
+The automated checks and public synthetic smoke workflow verify that:
 
 1. raw CSV data can be generated and preprocessed into the expected feature
    schema;
 2. retrieval consumes the cloud-accessible feature groups;
 3. PNN pre-ranking consumes `FG1+FG2` and executes the diversity-loss path; and
 4. device-stage PNN re-ranking consumes `FG1+FG2+FG3` together with a frozen
-   cloud logit.
+   cloud logit; and
+5. the TaobaoAd and Ali-CCP paper YAML files load and satisfy the checked
+   feature-count, cascade, model-dimension, negative-sampling, and diversity
+   contracts.
 
-The workflow is seeded, but exact metrics can still depend on dependency,
+The smoke workflow is seeded, but exact metrics can still depend on dependency,
 hardware, and numerical-kernel versions. Its synthetic metrics are integration
 test outputs, not research results.
 
 ## What is not claimed
 
-This release does not claim exact reproduction of any paper table. It does not
-include the dataset snapshots, split manifests, frozen paper configurations,
-trained checkpoints, or immutable run receipts needed to validate those
-values. The included smoke YAML is a test fixture, not a recovered paper run
-configuration.
+This release does not claim exact reproduction of any paper table. It includes
+paper-aligned TaobaoAd and Ali-CCP configurations, but not the dataset snapshots,
+split hashes, fully resolved historical run configurations, trained
+checkpoints, dependency image, or immutable metric receipts needed to validate
+the reported values. The smoke YAML is a synthetic test fixture; the two paper
+YAML files are executable configuration references, not frozen run receipts.
 
 For an exact result to be called reproduced, retain and publish one immutable
 receipt containing at least:

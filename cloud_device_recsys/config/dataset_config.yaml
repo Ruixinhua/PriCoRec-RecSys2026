@@ -53,3 +53,203 @@ SmokeTest:
       type: categorical
       dtype: int
       feature_group: FG3
+
+# Paper dataset schema for the Taobao Display Ad Click dataset.
+# The repository does not redistribute the dataset or its train/valid/test split.
+TaobaoAd:
+  raw_data_root: "./data/raw/TaobaoAd"
+  raw_data_format: "csv"
+  raw_files: [train, valid, test]
+
+  processed_data_root: "./data/processed/TaobaoAd"
+  processed_data_format: "parquet"
+
+  label_col:
+    name: "clk"
+    dtype: float
+
+  preprocessing:
+    min_categr_count: 1
+    positive_only_eval: true
+    generate_impression_id: true
+
+  item_pool:
+    file: "cand_items_test"
+    train_file: "cand_items_train.parquet"
+
+  impression_id_col: "impression_id"
+  user_id_col: "userid"
+  item_id_col: "adgroup_id"
+
+  feature_cols:
+    # FG1: cloud-accessible item and request-context fields (8 fields).
+    - name: "price"
+      type: numeric
+      dtype: float
+      source: item
+      feature_group: FG1
+
+    - name: [adgroup_id, cate_id, campaign_id, customer, brand, pid, btag]
+      type: categorical
+      dtype: str
+      source: item
+      feature_group: FG1
+
+    # FG2: cloud-accessible behavior sequences (3 fields).
+    - name: "cate_his"
+      type: sequence
+      dtype: str
+      max_len: 50
+      padding: pre
+      splitter: "^"
+      share_embedding: "cate_id"
+      feature_encoder: "layers.MaskedAveragePooling()"
+      source: user
+      feature_group: FG2
+
+    - name: "brand_his"
+      type: sequence
+      dtype: str
+      max_len: 50
+      padding: pre
+      splitter: "^"
+      share_embedding: "brand"
+      feature_encoder: "layers.MaskedAveragePooling()"
+      source: user
+      feature_group: FG2
+
+    - name: "btag_his"
+      type: sequence
+      dtype: str
+      max_len: 50
+      padding: pre
+      splitter: "^"
+      share_embedding: "btag"
+      feature_encoder: "layers.MaskedAveragePooling()"
+      source: user
+      feature_group: FG2
+
+    # FG3: device-only user-profile fields (8 fields).
+    - name: [cms_segid, cms_group_id, final_gender_code, age_level,
+             pvalue_level, shopping_level, occupation, new_user_class_level]
+      type: categorical
+      dtype: int
+      fill_na: 0
+      source: user
+      feature_group: FG3
+
+    # Grouping metadata, retained for user-level accounting but not model input.
+    - name: "userid"
+      type: meta
+      dtype: int
+      source: user
+      feature_group: drop
+
+# Paper dataset schema for Ali-CCP (Tianchi dataId 408).
+# Numeric field names follow the normalized CSV schema used by the experiments.
+Ali_CCP:
+  raw_data_root: "./data/raw/Ali_CCP"
+  raw_data_format: "csv"
+  raw_files: [train, valid, test]
+
+  processed_data_root: "./data/processed/Ali_CCP"
+  processed_data_format: "parquet"
+
+  label_col:
+    name: "click"
+    dtype: float
+
+  preprocessing:
+    min_categr_count: 1
+    positive_only_eval: true
+    generate_impression_id: true
+    min_item_count_eval: 10
+
+  item_pool:
+    file: "cand_items_test"
+    train_file: "cand_items_train.parquet"
+
+  impression_id_col: "impression_id"
+  user_id_col: "101"
+  item_id_col: "205"
+
+  feature_cols:
+    # FG1: cloud-accessible item/shop/request-context fields (5 fields).
+    - name: "205"
+      type: categorical
+      dtype: int
+      source: item
+      feature_group: FG1
+
+    - name: ["206", "207", "216"]
+      type: categorical
+      dtype: str
+      source: item
+      feature_group: FG1
+
+    - name: "301"
+      type: categorical
+      dtype: int
+      source: item
+      feature_group: FG1
+
+    # FG2: cloud-accessible behavior fields (9 fields).
+    - name: ["508", "509", "702"]
+      type: categorical
+      dtype: int
+      source: user
+      feature_group: FG2
+
+    - name: [D508, D509, D702]
+      type: numeric
+      dtype: float
+      source: user
+      feature_group: FG2
+
+    - name: ["109_14", "110_14", "127_14"]
+      type: sequence
+      dtype: int
+      max_len: 30
+      padding: pre
+      splitter: "^"
+      feature_encoder: "layers.MaskedAveragePooling()"
+      source: user
+      feature_group: FG2
+      share_embedding_map:
+        "109_14": "206"
+        "110_14": "207"
+        "127_14": "216"
+
+    # FG3: device-only user-history/profile fields (8 fields).
+    - name: ["121", "122", "124", "125", "126", "127", "128", "129"]
+      type: categorical
+      dtype: int
+      source: user
+      feature_group: FG3
+
+    # Fields excluded from model input in the paper feature boundary.
+    - name: "210"
+      type: sequence
+      dtype: int
+      max_len: 30
+      padding: pre
+      splitter: "^"
+      source: user
+      feature_group: drop
+
+    - name: "150_14"
+      type: sequence
+      dtype: int
+      max_len: 30
+      padding: pre
+      splitter: "^"
+      share_embedding: "210"
+      source: user
+      feature_group: drop
+
+    # Ali-CCP user identifier is part of the paper's device-only field group.
+    - name: "101"
+      type: categorical
+      dtype: int
+      source: user
+      feature_group: FG3

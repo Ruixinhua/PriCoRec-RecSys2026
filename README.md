@@ -21,7 +21,7 @@ process. “Cloud” and “device” therefore describe the experimental featur
 contract, not physically isolated services. This repository is not a recovered
 or frozen snapshot of the runs that produced the paper tables.
 
-Production serving infrastructure, platform orchestration, platform-specific
+Production serving infrastructure, platform orchestration, production-specific
 configuration, credentials, datasets, checkpoints, experiment logs, and
 generated results are intentionally excluded.
 
@@ -32,8 +32,8 @@ generated results are intentionally excluded.
 | `FG1+FG2` PNN pre-ranking with diversity regularization | Yes | Synthetic CPU smoke run |
 | `FG1+FG2+FG3` PNN re-ranking with cloud-logit input | Yes | Synthetic CPU smoke run |
 | Synthetic data generation and preprocessing | Yes | Tests and synthetic CPU smoke run |
-| Paper-dataset-ready configurations and checkpoints | No | Not distributed |
-| Frozen receipts for the numerical paper tables | No | No reproduction claim is made |
+| Paper-aligned TaobaoAd and Ali-CCP configurations | Yes | YAML loading and configuration-contract tests |
+| Paper checkpoints and immutable run receipts | No | No numerical reproduction claim is made |
 | Production serving/deployment infrastructure | No | Outside this repository's scope |
 
 The smoke configuration verifies that the maintained public code path runs. It
@@ -95,21 +95,71 @@ Run the automated checks with:
 python -m pytest -q
 ```
 
+## Paper configurations
+
+The current repository includes the paper-aligned dataset schemas and runnable
+pipeline configurations for the two publicly downloadable datasets. Each
+pipeline encodes the paper's `1,000 -> 100 -> 10` cascade, cloud-side
+`FG1+FG2` boundary, device-side `FG1+FG2+FG3` boundary, 1:4 pre-ranking and
+ranking negative sampling, 32-dimensional cloud PNN, 4-dimensional device PNN,
+and the reported per-dataset diversity weight `lambda = 1e-2`.
+
+| Dataset | Pipeline ID | Reported pre-ranking gAUC / R@100 | Reported device gAUC / R@1 / R@10 / N@10 / RR |
+| --- | --- | --- | --- |
+| Taobao Display Ad Click | [`pipeline_config/taobaoad_paper`](cloud_device_recsys/config/pipeline_config/taobaoad_paper.yaml) | 89.36 / 68.29 | 86.93 / 4.14 / 21.74 / 11.60 / 10.11 |
+| Ali-CCP | [`pipeline_config/ali_ccp_paper`](cloud_device_recsys/config/pipeline_config/ali_ccp_paper.yaml) | 73.69 / 47.72 | 73.30 / 7.06 / 24.10 / 16.02 / 13.43 |
+
+The table values are manuscript reference targets, not locally verified output.
+The YAML files do not replace the missing dataset snapshots, split hashes,
+checkpoints, dependency image, or immutable metric receipts required for an
+exact numerical reproduction claim.
+
+After obtaining a dataset, normalize it to the field names and three-split CSV
+layout declared in
+[`cloud_device_recsys/config/dataset_config.yaml`](cloud_device_recsys/config/dataset_config.yaml).
+Then run, for example:
+
+```bash
+DATASET_ID=TaobaoAd
+PIPELINE_ID=pipeline_config/taobaoad_paper
+RAW_DATA_ROOT=/path/to/normalized/TaobaoAd
+
+python -m cloud_device_recsys.run_preprocess \
+  --raw_data_root "$RAW_DATA_ROOT" \
+  --dataset_id "$DATASET_ID" \
+  --config_dir ./cloud_device_recsys/config \
+  --output_dir "./data/processed/$DATASET_ID" \
+  --force_rebuild
+
+python -m cloud_device_recsys.run_pipeline \
+  --config ./cloud_device_recsys/config \
+  --pipeline_id "$PIPELINE_ID" \
+  --dataset_id "$DATASET_ID" \
+  --mode full \
+  --gpu 0 \
+  --output_dir "./outputs/paper/$DATASET_ID" \
+  --experiment_id "${DATASET_ID}_paper"
+```
+
+For Ali-CCP, use `DATASET_ID=Ali_CCP` and
+`PIPELINE_ID=pipeline_config/ali_ccp_paper`. Set `--gpu -1` for CPU execution;
+the full public datasets are intended for a suitably provisioned accelerator.
+
 ## Feature-flow contract
 
-The synthetic schema in
+The schemas in
 [`cloud_device_recsys/config/dataset_config.yaml`](cloud_device_recsys/config/dataset_config.yaml)
-uses:
+use:
 
 - `FG1`: cloud-accessible candidate-item features;
 - `FG2`: cloud-accessible behavior-sequence features; and
 - `FG3`: private user/device features reserved for the logical device stage.
 
-Every real dataset field must receive an explicit, reviewed `feature_group`.
-Do not rely on a default assignment or field-name heuristic for privacy claims.
-The runnable template at
-[`cloud_device_recsys/config/pipeline_config/smoke_pipeline.yaml`](cloud_device_recsys/config/pipeline_config/smoke_pipeline.yaml)
-is a synthetic integration fixture, not a frozen paper hyperparameter file.
+Every dataset field receives an explicit, reviewed `feature_group`; the paper
+configs do not rely on a default assignment or field-name heuristic for the
+cloud/device boundary. The smoke pipeline remains a synthetic integration
+fixture, while `taobaoad_paper.yaml` and `ali_ccp_paper.yaml` encode the
+paper-aligned public-dataset settings.
 
 Feature separation is an experimental information-flow constraint. It does not,
 by itself, establish differential privacy, secure aggregation, legal
@@ -125,9 +175,9 @@ owner and comply with its license and terms:
 
 An official public download source for the OpenMCC variant used in the study was
 not verified for this release, so this repository does not provide an
-unverified mirror or substitute link. This release also does not contain
-paper-dataset-ready YAML files. See [`DATA.md`](DATA.md) for the input contract
-and adaptation checklist.
+unverified mirror or substitute link. The included TaobaoAd and Ali-CCP YAML
+files expect normalized local splits and do not redistribute source data. See
+[`DATA.md`](DATA.md) for the input contract and adaptation checklist.
 
 ## Repository layout
 

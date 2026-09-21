@@ -1,0 +1,130 @@
+# PriCoRec paper-aligned configuration for Taobao Display Ad Click.
+# Reported paper metrics are reference targets, not assertions of local reproduction.
+
+dataset_id: "TaobaoAd"
+dataset_config: "./cloud_device_recsys/config/dataset_config.yaml"
+
+seed: 2024
+gpu: 0
+
+debug:
+  n_rows: null
+
+vocab_pruning:
+  enabled: 0
+  mode: "runtime"
+  save_fp16: false
+
+stages:
+  retrieval:
+    enabled: true
+    model: "DualTowerRetrieval"
+    features: ["FG1", "FG2"]
+    top_k: 1000
+    model_params:
+      metrics_k: [1000]
+      monitor: "Recall@1000"
+      num_negatives: 20
+      loss_type: "sampled_softmax"
+      use_in_batch_negatives: true
+      embedding_dim: 32
+      temperature: 0.05
+      use_feature_encoder: true
+      use_l2_norm: true
+      use_user_transformer: true
+      user_transformer_layers: 1
+      user_transformer_heads: 4
+      use_item_transformer: false
+      item_transformer_layers: 0
+      user_tower_layers: [128, 32]
+      item_tower_layers: [128, 32]
+      embedding_regularizer: 1.0e-5
+      net_regularizer: 1.0e-5
+      max_gradient_norm: 5.0
+      user_tower_dropout: 0.1
+      item_tower_dropout: 0.1
+      learning_rate: 0.001
+    training:
+      epochs: 10
+      batch_size: 4096
+      patience: 2
+      learning_rate: 0.001
+      optimizer: "adam"
+    metrics: ["Recall"]
+
+  preranking:
+    enabled: true
+    model: "PNN"
+    features: ["FG1", "FG2"]
+    top_k: 100
+    neg_sampling_pool: "train"
+    model_params:
+      metrics_k: [1, 10, 50, 100]
+      monitor: "Recall@100"
+      patience: 2
+      num_negatives: 4
+      loss_type: "bpr"
+      use_logit: true
+      embedding_dim: 32
+      use_feature_encoder: true
+      hidden_units: [128, 64, 32]
+      hidden_activations: "ReLU"
+      net_dropout: 0.0
+      batch_norm: false
+      product_type: "inner"
+      embedding_regularizer: 1.0e-5
+      net_regularizer: 1.0e-5
+      max_gradient_norm: 5.0
+      learning_rate: 0.001
+      use_diversity_loss: true
+      diversity_lambda: 0.01
+      diversity_theta: 0.0
+      diversity_num_negatives: 4
+      diversity_start_epoch: 0
+      diversity_epochs: 10
+      diversity_warmup_epochs: 0
+      diversity_item_features:
+        [adgroup_id, cate_id, campaign_id, customer, brand, pid, btag, price]
+    training:
+      epochs: 15
+      batch_size: 4096
+      learning_rate: 0.001
+      optimizer: "adam"
+    metrics: ["nDCG", "Recall"]
+
+  reranking:
+    enabled: true
+    model: "PNN"
+    features: ["FG1", "FG2", "FG3"]
+    top_k: 10
+    neg_sampling_pool: "train"
+    model_params:
+      metrics_k: [1, 10]
+      monitor: "Recall@1"
+      num_negatives: 4
+      loss_type: "bpr"
+      use_logit: true
+      embedding_dim: 4
+      use_feature_encoder: true
+      hidden_units: [64, 32]
+      hidden_activations: "ReLU"
+      net_dropout: 0.0
+      batch_norm: false
+      product_type: "inner"
+      embedding_regularizer: 1.0e-5
+      net_regularizer: 1.0e-5
+      max_gradient_norm: 5.0
+      learning_rate: 0.001
+      use_diversity_loss: false
+      use_cloud_score: true
+    training:
+      epochs: 30
+      batch_size: 2048
+      learning_rate: 0.001
+      optimizer: "adam"
+    metrics: ["nDCG", "Recall"]
+
+output:
+  root: "./outputs"
+  save_intermediate: true
+  save_csv: true

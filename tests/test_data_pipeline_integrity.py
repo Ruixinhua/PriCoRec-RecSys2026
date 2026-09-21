@@ -46,7 +46,7 @@ class _RecordingFeatureProcessor:
 
 
 class DataPipelineIntegrityTests(unittest.TestCase):
-    def test_preprocessor_fits_train_only_and_persists_impression_id(self):
+    def test_preprocessor_fits_train_only_and_persists_auxiliary_ids(self):
         with tempfile.TemporaryDirectory() as temp_dir:
             tmp_path = Path(temp_dir)
             raw_dir = tmp_path / "raw"
@@ -56,9 +56,9 @@ class DataPipelineIntegrityTests(unittest.TestCase):
             config_dir.mkdir()
 
             for split, frame in {
-                "train": pd.DataFrame({"label": [1, 0], "feature": [10, 11], "impression_id": [100, 100]}),
-                "valid": pd.DataFrame({"label": [1], "feature": [99], "impression_id": [200]}),
-                "test": pd.DataFrame({"label": [1], "feature": [77], "impression_id": [300]}),
+                "train": pd.DataFrame({"label": [1, 0], "feature": [10, 11], "impression_id": [100, 100], "user_id": [1, 1]}),
+                "valid": pd.DataFrame({"label": [1], "feature": [99], "impression_id": [200], "user_id": [2]}),
+                "test": pd.DataFrame({"label": [1], "feature": [77], "impression_id": [300], "user_id": [3]}),
             }.items():
                 frame.to_csv(raw_dir / f"{split}.csv", index=False)
 
@@ -68,6 +68,7 @@ class DataPipelineIntegrityTests(unittest.TestCase):
                     "processed_data_root": str(output_dir),
                     "label_col": {"name": "label", "dtype": "float"},
                     "impression_id_col": "impression_id",
+                    "user_id_col": "user_id",
                     "item_id_col": "feature",
                     "preprocessing": {
                         "positive_only_eval": False,
@@ -105,6 +106,9 @@ class DataPipelineIntegrityTests(unittest.TestCase):
             self.assertEqual(transformed["train"]["impression_id"].to_list(), [100, 100])
             self.assertEqual(transformed["valid"]["impression_id"].to_list(), [200])
             self.assertEqual(transformed["test"]["impression_id"].to_list(), [300])
+            self.assertEqual(transformed["train"]["user_id"].to_list(), [1, 1])
+            self.assertEqual(transformed["valid"]["user_id"].to_list(), [2])
+            self.assertEqual(transformed["test"]["user_id"].to_list(), [3])
 
     def test_eval_item_filter_is_derived_from_train_not_holdout_labels(self):
         with tempfile.TemporaryDirectory() as temp_dir:

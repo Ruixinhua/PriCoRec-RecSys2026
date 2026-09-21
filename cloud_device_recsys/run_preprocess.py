@@ -103,9 +103,9 @@ def preserve_auxiliary_columns(
     """Append non-model columns that ``FeatureProcessor.preprocess`` projects out.
 
     The feature processor deliberately selects only labels and active model
-    features.  Request identifiers are needed by downstream listwise
-    evaluation but must not become model inputs, so keep them in the persisted
-    dataset as an auxiliary column after feature preprocessing.
+    features. Request and grouping identifiers are needed by downstream
+    evaluation but need not become model inputs, so keep them in the persisted
+    dataset as auxiliary columns after feature preprocessing.
 
     Both lazy frames originate from the same, already-filtered source and
     feature preprocessing is row-preserving.  Horizontal concatenation
@@ -117,8 +117,8 @@ def preserve_auxiliary_columns(
     if missing:
         raise ValueError(
             "Required auxiliary columns are missing after split preprocessing: "
-            f"{missing}. Configure a valid impression_id_col or enable "
-            "generate_impression_id."
+            f"{missing}. Configure valid impression_id_col/user_id_col values "
+            "or enable generate_impression_id for the request identifier."
         )
 
     processed_columns = set(processed_ddf.collect_schema().names())
@@ -371,6 +371,7 @@ class DataPreprocessor:
         self.feature_cols = expand_feature_cols(self.config.get('feature_cols', []))
         self.label_cols = build_label_col(self.config)
         self.impression_id_col = self.config.get('impression_id_col', 'impression_id')
+        self.user_id_col = self.config.get('user_id_col')
         if any(feature['name'] == self.impression_id_col for feature in self.feature_cols):
             raise ValueError(
                 f"impression_id_col '{self.impression_id_col}' must be an auxiliary "
@@ -637,10 +638,13 @@ class DataPreprocessor:
             # ID which FeatureProcessor.preprocess intentionally projects out.
             source_ddf = split_ddf
             split_ddf = feature_processor.preprocess(source_ddf)
+            auxiliary_columns = [self.impression_id_col]
+            if self.user_id_col and self.user_id_col not in auxiliary_columns:
+                auxiliary_columns.append(self.user_id_col)
             split_ddf = preserve_auxiliary_columns(
                 split_ddf,
                 source_ddf,
-                [self.impression_id_col],
+                auxiliary_columns,
             )
 
             # Transform and save
