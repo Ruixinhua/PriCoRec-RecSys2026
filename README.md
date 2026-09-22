@@ -33,8 +33,6 @@ generated results are intentionally excluded.
 | `FG1+FG2+FG3` PNN re-ranking with cloud-logit input | Yes | Synthetic CPU smoke run |
 | Synthetic data generation and preprocessing | Yes | Tests and synthetic CPU smoke run |
 | Paper-aligned TaobaoAd and Ali-CCP configurations | Yes | YAML loading and configuration-contract tests |
-| Paper checkpoints and immutable run receipts | No | No numerical reproduction claim is made |
-| Production serving/deployment infrastructure | No | Outside this repository's scope |
 
 The smoke configuration verifies that the maintained public code path runs. It
 does **not** reproduce or validate the numerical tables in the paper.
@@ -108,11 +106,6 @@ and the reported per-dataset diversity weight `lambda = 1e-2`.
 | --- | --- | --- | --- |
 | Taobao Display Ad Click | [`pipeline_config/taobaoad_paper`](cloud_device_recsys/config/pipeline_config/taobaoad_paper.yaml) | 89.36 / 68.29 | 86.93 / 4.14 / 21.74 / 11.60 / 10.11 |
 | Ali-CCP | [`pipeline_config/ali_ccp_paper`](cloud_device_recsys/config/pipeline_config/ali_ccp_paper.yaml) | 73.69 / 47.72 | 73.30 / 7.06 / 24.10 / 16.02 / 13.43 |
-
-The table values are manuscript reference targets, not locally verified output.
-The YAML files do not replace the missing dataset snapshots, split hashes,
-checkpoints, dependency image, or immutable metric receipts required for an
-exact numerical reproduction claim.
 
 After obtaining a dataset, normalize it to the field names and three-split CSV
 layout declared in
