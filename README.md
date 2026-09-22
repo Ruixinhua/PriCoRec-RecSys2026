@@ -175,12 +175,6 @@ DATA.md                Input schema and dataset adaptation checklist
 REPRODUCIBILITY.md     Evidence boundary for numerical reproduction claims
 ```
 
-The comparison adapters under `model_zoo/PrivacyPreserving/` are research
-interfaces. `DPSGD` is fail-closed because this release does not include a
-verified per-sample gradient implementation and privacy accountant. The
-federated-style adapters do not provide federated transport or secure
-aggregation.
-
 ## Citation
 
 Please cite the RecSys '26 paper and this software release. Machine-readable
