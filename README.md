@@ -50,14 +50,6 @@ python -m pip install --upgrade pip
 python -m pip install -e ".[dev]"
 ```
 
-Use `python -m pip install -e .` for runtime dependencies only. The normal
-Parquet/CSV workflow does not require TensorFlow. Install the optional TFRecord
-reader only when needed:
-
-```bash
-python -m pip install -e ".[tfrecord]"
-```
-
 ## Quick start
 
 Run the complete synthetic workflow from the repository root on CPU:
